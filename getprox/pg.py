@@ -12,7 +12,8 @@ Proxy retrieval class.
 import numbers
 import Queue
 
-import futures
+#import futures
+import concurrent.futures
 import requests
 import requests_futures.sessions
 
@@ -42,7 +43,7 @@ class ProxyGet(object):
 
         if not sources:
             sources = getters.__all__
-        self.executor = futures.ThreadPoolExecutor(len(sources)+1)
+        self.executor = concurrent.futures.ThreadPoolExecutor(len(sources)+1)
         self.tester = proxytest.ProxyTest()
         self._executing_getters = []
         self._executing_queues = []
@@ -69,8 +70,8 @@ class ProxyGet(object):
         Wait until all proxy retrieval/collection threads finish running.
         """
 
-        futures.wait(self._executing_getters, return_when=futures.ALL_COMPLETED)
-        futures.wait(self._executing_queues, return_when=futures.ALL_COMPLETED)
+        concurrent.futures.wait(self._executing_getters, return_when=concurrent.futures.ALL_COMPLETED)
+        concurrent.futures.wait(self._executing_queues, return_when=concurrent.futures.ALL_COMPLETED)
 
     def _get_proxies(self, getter):
         try:
